@@ -9,11 +9,12 @@
 ///
 /// Stream serial table with default chunk_size, from, and to
 ///
-/// ```
+/// ```ignore
 /// async fn main() {
+///     use diesel_streamer::stream_serial_table;
 ///     use crate::schema::some_table::dsl::{some_table, autoincremented_field};
 ///
-///     let mut conn = repo.pool.get().await.unwrap();
+///     let mut conn = pool.get().await.unwrap();
 ///
 ///     stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
 ///         // do work here
