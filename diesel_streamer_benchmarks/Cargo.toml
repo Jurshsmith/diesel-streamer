@@ -1,0 +1,9 @@
+[package]
+name = "diesel_streamer_benchmarks"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+diesel_streamer = { path = "../diesel_streamer" }
+sysinfo = "0.29.4"

@@ -2,5 +2,6 @@
 
 members = [
   "diesel_streamer",
+  "diesel_streamer_benchmarks",
   "diesel_streamer_tests",
 ]
