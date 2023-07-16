@@ -1,29 +1,44 @@
 use crate::{db, Benchmarkable};
-use diesel::{insert_into, prelude::*, sql_query, Insertable};
+use diesel::{insert_into, prelude::*, sql_query, sql_types::Integer, Insertable};
 
 pub struct SerialTable;
 
 impl Benchmarkable for SerialTable {
     fn setup() {
-        Self::create_users_table();
-        Self::insert_bulk_users();
+        Self::create_table();
+        Self::insert_bulk_data();
     }
 
-    fn do_eager() {
-        print!("THIS IS SOME VERY LONG LINE.THIS IS SOME VERY LONG LINE.THIS IS SOME VERY LONG LINE.THIS IS SOME VERY LONG LINE.");
+    fn do_eager_loading() {
+        use crate::serial_table::users::dsl::users;
+
+        let mut conn = db::connect();
+
+        let loaded_users = users.load::<User>(&mut conn).unwrap();
+
+        loaded_users.into_iter().for_each(|user| {
+            // Process serial table eagerly
+            // Self::process_data(&user)
+        })
     }
 
-    fn do_lazy() {
-        print!("THIS IS SOME VERY LONG LINE.");
-        print!("THIS IS SOME VERY LONG LINE.");
-        print!("THIS IS SOME VERY LONG LINE.");
-        print!("THIS IS SOME VERY LONG LINE.");
+    fn do_lazy_loading() {
+        use crate::serial_table::users::dsl::{id, users};
+
+        let mut conn = db::connect();
+
+        diesel_streamer::stream_serial_table!(users, id, conn, |loaded_users: Vec<User>| {
+            loaded_users.into_iter().for_each(|user| {
+                // Process serial table lazily
+                // Self::process_data(&user)
+            });
+        })
     }
 }
 
 impl SerialTable {
-    fn create_users_table() {
-        let mut conn = db::establish_connection();
+    fn create_table() {
+        let mut conn = db::connect();
 
         sql_query("DROP TABLE IF EXISTS users;")
             .execute(&mut conn)
@@ -43,26 +58,39 @@ impl SerialTable {
         .unwrap();
     }
 
-    const BULK_USERS_SIZE: i32 = 10000;
-    fn insert_bulk_users() {
-        use crate::serial_table::users::dsl::users;
+    fn process_data(user: &User) {
+        let mut conn = db::connect();
 
-        let mut conn = db::establish_connection();
-
-        let unsaved_users: Vec<UnsavedUser> = (1..=Self::BULK_USERS_SIZE)
-            .into_iter()
-            .map(|index| UnsavedUser {
-                name: format!("User Name {}", index),
-            })
-            .collect();
-
-        insert_into(users)
-            .values(&unsaved_users)
+        sql_query("UPDATE users SET updated_at = NOW() WHERE id = $1")
+            .bind::<Integer, _>(user.id)
             .execute(&mut conn)
             .unwrap();
     }
+
+    // TODO: Make these env variables?
+    const TOTAL_BULK_SIZE: i32 = 1000000;
+    const MAX_BULK_CHUNK_SIZE: usize = 65535;
+    fn insert_bulk_data() {
+        use crate::serial_table::users::dsl::users;
+
+        let mut conn = db::connect();
+
+        let unsaved_users = (1..=Self::TOTAL_BULK_SIZE)
+            .map(|index| UnsavedUser {
+                name: format!("User Name {}", index),
+            })
+            .collect::<Vec<UnsavedUser>>();
+
+        for unsaved_users in unsaved_users.chunks(Self::MAX_BULK_CHUNK_SIZE) {
+            insert_into(users)
+                .values(unsaved_users)
+                .execute(&mut conn)
+                .unwrap();
+        }
+    }
 }
 
+// A Serial Table
 table! {
     users (id) {
         id -> Serial,
@@ -73,12 +101,13 @@ table! {
 }
 
 #[derive(Debug, Insertable)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 struct UnsavedUser {
     pub name: String,
 }
 
-#[derive(Debug, Queryable)]
+#[derive(Queryable)]
+#[allow(dead_code)]
 struct User {
     pub id: i32,
     pub name: String,

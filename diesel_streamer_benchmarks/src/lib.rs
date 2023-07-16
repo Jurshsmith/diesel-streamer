@@ -1,5 +1,6 @@
 mod benchmarkable;
-mod db;
+pub mod benchmarks;
+pub mod db;
 mod serial_table;
 
 pub use benchmarkable::Benchmarkable;

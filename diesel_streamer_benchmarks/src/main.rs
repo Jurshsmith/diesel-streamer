@@ -1,5 +1,7 @@
-use diesel_streamer_benchmarks::{Benchmarkable, SerialTable};
+use criterion::criterion_main;
 
-fn main() {
-    SerialTable::benchmark();
+use diesel_streamer_benchmarks::benchmarks;
+
+criterion_main! {
+  benchmarks::compare_functions::fibonaccis,
 }
