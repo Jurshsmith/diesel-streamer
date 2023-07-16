@@ -3,6 +3,10 @@ name = "diesel_streamer"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = ["sync"]
+sync = []
+async = []
 
 [dependencies]
 diesel = "2" 
