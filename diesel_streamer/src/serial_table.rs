@@ -78,35 +78,57 @@ macro_rules! stream_serial_table {
 
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr ,  $chunk_size:expr , $from:expr, $to:expr, $stream_processor: expr,) => {{
         use diesel::dsl::max;
-        use diesel::QueryDsl;
+        use diesel::{prelude::*, QueryDsl, RunQueryDsl};
 
         let to = match $to {
             Some(to) => to,
             None => $query
                 .select(max($cursor_field))
-                .get_result::<Option<i32>>(&mut $conn)
+                .get_result::<Option<i32>>($conn)
                 .await
                 .unwrap()
-                .unwrap(),
+                .unwrap_or(0),
         };
 
-        while $from <= to {
-            let streamed_data = $query
-                .filter($cursor_field.eq_any($from..=to))
-                .load(&mut $conn)
-                .await
-                .unwrap();
+        if (to > $from) {
+            while $from <= to {
+                let chunk_limit = $from + $chunk_size;
 
-            // Since streamed_data is MOVED into the processor directly,
-            // it should go out of scope thereby resulting to
-            // freed memory right after Rust auto-calls DROP function
-            ($stream_processor)(streamed_data).await;
+                let streamed_data = $query
+                    .filter($cursor_field.eq_any($from..=chunk_limit))
+                    .load($conn)
+                    .await
+                    .unwrap();
 
-            $from = $from + $chunk_size;
+                ($stream_processor)(streamed_data).await;
+
+                $from = chunk_limit;
+            }
         }
     }};
 }
 
+/// Streams a serial table for diesel schemas. A serial table has an
+/// autoincremented field which is used to cursor through the table
+/// for processing.
+///
+///
+/// # Examples
+///
+/// Stream a serial table with default chunk_size, from, and to
+///
+/// ```ignore
+/// async fn main() {
+///     use diesel_streamer::stream_serial_table;
+///     use crate::schema::some_table::dsl::{some_table, autoincremented_field};
+///
+///     let mut conn = pool.get().await.unwrap();
+///
+///     stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///         // do work here
+///     });
+/// }
+/// ```
 #[macro_export]
 #[cfg(feature = "sync")]
 #[cfg(not(feature = "async"))]
@@ -164,29 +186,30 @@ macro_rules! stream_serial_table {
 
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr ,  $chunk_size:expr , $from:expr, $to:expr, $stream_processor: expr,) => {{
         use diesel::dsl::max;
-        use diesel::QueryDsl;
+        use diesel::{prelude::*, QueryDsl, RunQueryDsl};
 
         let to = match $to {
             Some(to) => to,
             None => $query
                 .select(max($cursor_field))
-                .get_result::<Option<i32>>(&mut $conn)
+                .get_result::<Option<i32>>($conn)
                 .unwrap()
-                .unwrap(),
+                .unwrap_or(0),
         };
 
-        while $from <= to {
-            let streamed_data = $query
-                .filter($cursor_field.eq_any($from..=to))
-                .load(&mut $conn)
-                .unwrap();
+        if (to > $from) {
+            while $from <= to {
+                let chunk_limit = $from + $chunk_size;
 
-            // Since streamed_data is MOVED into the processor directly,
-            // it should go out of scope thereby resulting to
-            // freed memory right after Rust auto-calls DROP function
-            ($stream_processor)(streamed_data);
+                let streamed_data = $query
+                    .filter($cursor_field.eq_any($from..=chunk_limit))
+                    .load($conn)
+                    .unwrap();
 
-            $from = $from + $chunk_size;
+                ($stream_processor)(streamed_data);
+
+                $from = chunk_limit;
+            }
         }
     }};
 }
