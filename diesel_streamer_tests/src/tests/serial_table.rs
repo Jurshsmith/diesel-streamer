@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod tests {
+    use crate::counter::Counter;
     use crate::factory::{self, User};
     use crate::test_runner;
-    use std::sync::Mutex;
 
     #[test]
     fn allows_processing_table_data() {
@@ -25,19 +25,29 @@ mod tests {
         test_runner::run_test(|conn| {
             use factory::users::dsl::{id, users};
 
-            let was_called_at_least_once = Mutex::new(false);
+            let call_count = Counter::new(0);
 
             diesel_streamer::stream_serial_table!(users, id, conn, |_loaded_users: Vec<User>| {
-                *was_called_at_least_once.lock().unwrap() = true;
+                call_count.increment()
             });
 
-            assert!(!was_called_at_least_once.into_inner().unwrap());
+            assert_eq!(*call_count.value, 0);
         });
     }
 
     #[test]
     fn allows_processing_table_data_in_chunks() {
-        assert_eq!(1, 2);
+        test_runner::run_test(|conn| {
+            use factory::users::dsl::{id, users};
+
+            factory::insert_users(1..=2, conn);
+
+            let chunk_size = 1;
+
+            diesel_streamer::stream_serial_table!(users, id, conn, 1, |loaded_users: Vec<User>| {
+                assert!(loaded_users.len() <= chunk_size);
+            });
+        });
     }
 
     #[test]

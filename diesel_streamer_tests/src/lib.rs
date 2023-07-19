@@ -1,5 +1,6 @@
+pub mod counter;
 pub mod db;
 pub mod factory;
 mod migrations;
-mod test_runner;
+pub mod test_runner;
 mod tests;
