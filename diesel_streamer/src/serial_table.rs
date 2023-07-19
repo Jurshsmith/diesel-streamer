@@ -23,21 +23,21 @@
 ///     let chunk_size = 20;
 ///     
 ///    // with chunk size
-///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, |streamed_table_data| async move {
 ///         // do work here
-///     }, chunk_size);
+///     });
 ///    
 ///    // with a specified beginning
 ///    let beginning_id = 200;
-///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, autoincremented_field, conn,  chunk_size, beginning_id, |streamed_table_data| async move {
 ///         // do work here
-///     }, chunk_size, beginning_id);
+///     });
 ///
 ///   // with a specified end
 ///    let end_id = 340;
-///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, autoincremented_field, conn,  chunk_size, beginning_id, end_id, |streamed_table_data| async move {
 ///         // do work here
-///     }, chunk_size, beginning_id, end_id);
+///     });
 /// }
 /// ```
 #[macro_export]
@@ -48,7 +48,7 @@ macro_rules! stream_serial_table {
         use diesel_streamer::stream_serial_table;
 
         let default_chunk_size = 500;
-        let mut default_from = 0;
+        let default_from = None;
         let default_to = None;
 
         stream_serial_table!(
@@ -63,9 +63,9 @@ macro_rules! stream_serial_table {
     }};
 
     ( $query:expr , $cursor_field:expr , $conn: expr , $chunk_size: expr, $stream_processor: expr) => {{
-        use crate::stream_serial_table;
+        use diesel_streamer::stream_serial_table;
 
-        let mut default_from = 0;
+        let default_from = None;
         let default_to = None;
 
         stream_serial_table!(
@@ -80,7 +80,7 @@ macro_rules! stream_serial_table {
     }};
 
     ( $query:expr , $cursor_field:expr , $conn: expr , $chunk_size: expr, $from: expr, $stream_processor: expr) => {{
-        use crate::stream_serial_table;
+        use diesel_streamer::stream_serial_table;
 
         let default_to = None;
 
@@ -96,8 +96,17 @@ macro_rules! stream_serial_table {
     }};
 
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr ,  $chunk_size:expr , $from:expr, $to:expr, $stream_processor: expr,) => {{
-        use diesel::dsl::max;
+        use diesel::dsl::{max, min};
         use diesel::{prelude::*, QueryDsl, RunQueryDsl};
+
+        let mut from = match $from {
+            Some(from) => from,
+            None => $query
+                .select(min($cursor_field))
+                .get_result::<Option<i32>>($conn)
+                .unwrap()
+                .unwrap_or(0),
+        };
 
         let to = match $to {
             Some(to) => to,
@@ -114,7 +123,7 @@ macro_rules! stream_serial_table {
                 let chunk_limit = $from + $chunk_size;
 
                 let streamed_data = $query
-                    .filter($cursor_field.eq_any($from..=chunk_limit))
+                    .filter($cursor_field.eq_any($from..chunk_limit))
                     .load($conn)
                     .await
                     .unwrap();
@@ -150,22 +159,22 @@ macro_rules! stream_serial_table {
 ///     let chunk_size = 20;
 ///     
 ///    // with chunk size
-///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, |streamed_table_data| async move {
 ///         // do work here
-///     }, chunk_size);
+///     });
 ///
 ///    
 ///    // with a specified beginning
 ///    let beginning_id = 200;
-///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, beginning_id, |streamed_table_data| async move {
 ///         // do work here
-///     }, chunk_size, beginning_id);
+///     });
 ///
 ///   // with a specified end
 ///    let end_id = 340;
-///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, beginning_id, end_id, |streamed_table_data| async move {
 ///         // do work here
-///     }, chunk_size, beginning_id, end_id);
+///     });
 /// }
 /// ```
 #[macro_export]
@@ -176,7 +185,7 @@ macro_rules! stream_serial_table {
         use diesel_streamer::stream_serial_table;
 
         let default_chunk_size = 100000;
-        let mut default_from = 0;
+        let default_from = None;
         let default_to = None;
 
         stream_serial_table!(
@@ -191,9 +200,9 @@ macro_rules! stream_serial_table {
     }};
 
     ( $query:expr , $cursor_field:expr , $conn: expr , $chunk_size: expr, $stream_processor: expr) => {{
-        use crate::stream_serial_table;
+        use diesel_streamer::stream_serial_table;
 
-        let mut default_from = 0;
+        let mut default_from = None;
         let default_to = None;
 
         stream_serial_table!(
@@ -208,7 +217,7 @@ macro_rules! stream_serial_table {
     }};
 
     ( $query:expr , $cursor_field:expr , $conn: expr , $chunk_size: expr, $from: expr, $stream_processor: expr) => {{
-        use crate::stream_serial_table;
+        use diesel_streamer::stream_serial_table;
 
         let default_to = None;
 
@@ -224,8 +233,17 @@ macro_rules! stream_serial_table {
     }};
 
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr ,  $chunk_size:expr , $from:expr, $to:expr, $stream_processor: expr,) => {{
-        use diesel::dsl::max;
+        use diesel::dsl::{max, min};
         use diesel::{prelude::*, QueryDsl, RunQueryDsl};
+
+        let mut from = match $from {
+            Some(from) => from,
+            None => $query
+                .select(min($cursor_field))
+                .get_result::<Option<i32>>($conn)
+                .unwrap()
+                .unwrap_or(0),
+        };
 
         let to = match $to {
             Some(to) => to,
@@ -236,18 +254,18 @@ macro_rules! stream_serial_table {
                 .unwrap_or(0),
         };
 
-        if (to > $from) {
-            while $from <= to {
-                let chunk_limit = $from + $chunk_size;
+        if (to > from) {
+            while from <= to {
+                let chunk_limit = from + $chunk_size;
 
                 let streamed_data = $query
-                    .filter($cursor_field.eq_any($from..=chunk_limit))
+                    .filter($cursor_field.eq_any(from..chunk_limit))
                     .load($conn)
                     .unwrap();
 
                 ($stream_processor)(streamed_data);
 
-                $from = chunk_limit;
+                from = chunk_limit;
             }
         }
     }};
