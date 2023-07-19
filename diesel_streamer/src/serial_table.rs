@@ -19,6 +19,25 @@
 ///     stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
 ///         // do work here
 ///     });
+///
+///     let chunk_size = 20;
+///     
+///    // with chunk size
+///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///         // do work here
+///     }, chunk_size);
+///    
+///    // with a specified beginning
+///    let beginning_id = 200;
+///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///         // do work here
+///     }, chunk_size, beginning_id);
+///
+///   // with a specified end
+///    let end_id = 340;
+///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///         // do work here
+///     }, chunk_size, beginning_id, end_id);
 /// }
 /// ```
 #[macro_export]
@@ -127,6 +146,26 @@ macro_rules! stream_serial_table {
 ///     stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
 ///         // do work here
 ///     });
+///
+///     let chunk_size = 20;
+///     
+///    // with chunk size
+///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///         // do work here
+///     }, chunk_size);
+///
+///    
+///    // with a specified beginning
+///    let beginning_id = 200;
+///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///         // do work here
+///     }, chunk_size, beginning_id);
+///
+///   // with a specified end
+///    let end_id = 340;
+///    stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///         // do work here
+///     }, chunk_size, beginning_id, end_id);
 /// }
 /// ```
 #[macro_export]
