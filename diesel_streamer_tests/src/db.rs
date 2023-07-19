@@ -5,10 +5,7 @@ use std::env;
 
 use crate::migrations;
 
-pub fn run_test<TestFn>(test_fn: TestFn)
-where
-    TestFn: FnOnce(&mut PgConnection),
-{
+pub fn establish_connection() -> PgConnection {
     let db_url = database_url();
 
     PgConnection::establish(&db_url).unwrap_or_else(|_error| {
@@ -22,14 +19,8 @@ where
 
         migrations::run(&mut conn);
 
-        conn.test_transaction(|conn| -> Result<(), ()> {
-            test_fn(conn);
-
-            Ok(())
-        });
-
         conn
-    });
+    })
 }
 
 fn connect() -> PgConnection {

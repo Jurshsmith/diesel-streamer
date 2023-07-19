@@ -1,12 +1,12 @@
 #[cfg(test)]
 mod tests {
-    use crate::db;
     use crate::factory::{self, User};
+    use crate::test_runner;
     use std::sync::Mutex;
 
     #[test]
     fn allows_processing_table_data() {
-        db::run_test(|conn| {
+        test_runner::run_test(|conn| {
             factory::insert_users(1..=2, conn);
 
             let all_users = factory::get_users(conn);
@@ -22,7 +22,7 @@ mod tests {
 
     #[test]
     fn does_nothing_when_table_is_empty() {
-        db::run_test(|conn| {
+        test_runner::run_test(|conn| {
             use factory::users::dsl::{id, users};
 
             let was_called_at_least_once = Mutex::new(false);
