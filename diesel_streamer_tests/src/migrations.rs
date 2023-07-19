@@ -5,10 +5,6 @@ pub fn run(conn: &mut PgConnection) {
 }
 
 fn create_user_table(conn: &mut PgConnection) {
-    // sql_query("DROP TABLE IF EXISTS users")
-    //     .execute(conn)
-    //     .unwrap();
-
     sql_query(
         r#"
         CREATE TABLE IF NOT EXISTS users (
