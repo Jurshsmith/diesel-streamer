@@ -2,7 +2,7 @@
 name = "diesel-streamer"
 version = "0.1.0"
 authors = ["Joshua Oladele <jurshsmith@gmail.com>"]
-categories = ["streaming", "diesel", "database"]
+categories = ["database", "database-implementations"]
 description = "A tiny diesel add-on for streaming large tables"
 documentation = "https://github.com/jurshsmith/diesel-streamer#readme"
 edition = "2021"
