@@ -2,12 +2,12 @@
 name = "diesel-streamer"
 version = "0.1.0"
 authors = ["Joshua Oladele <jurshsmith@gmail.com>"]
-categories = ["streaming", "lazy loading", "diesel", "database", "postgres", "mysql", "sqlite"]
+categories = ["streaming", "diesel", "database"]
 description = "A tiny diesel add-on for streaming large tables"
 documentation = "https://github.com/jurshsmith/diesel-streamer#readme"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-keywords = ["streaming", "serial", "cursor-based", "bigserial", "database streaming", "large tables"]
+keywords = ["streaming", "cursor-based", "bigserial", "database"]
 repository = "https://github.com/jurshsmith/diesel-streamer"
 rust-version = "1.56"
 
