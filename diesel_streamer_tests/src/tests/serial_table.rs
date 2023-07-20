@@ -110,9 +110,4 @@ mod tests {
             );
         });
     }
-
-    #[test]
-    fn stops_at_the_max_end_when_no_end_is_specified() {
-        assert_eq!(1, 2);
-    }
 }
