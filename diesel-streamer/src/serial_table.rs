@@ -4,38 +4,45 @@
 /// autoincremented field which is used to cursor through the table
 /// for processing.
 ///
+/// Defaults:
+///
+/// - Chunk size is 500
+/// - Cursor's beginning is the minimum value of the serial table
+/// - Cursor's end is the maximum value of the serial table
+///
 ///
 /// # Examples
 ///
-/// Stream a serial table with default chunk_size, from, and to
+/// Stream a serial table using different configurations.
 ///
 /// ```ignore
+/// use diesel_streamer::stream_serial_table;
+///
 /// async fn main() {
-///     use diesel_streamer::stream_serial_table;
-///     use crate::schema::some_table::dsl::{some_table, autoincremented_field};
+///     use crate::schema::some_table::dsl::{some_table, serial_field};
 ///
 ///     let mut conn = pool.get().await.unwrap();
 ///
-///     stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///     stream_serial_table!(some_table, serial_field, conn, |streamed_table_data| async {
 ///         // do work here
 ///     });
 ///
 ///     let chunk_size = 20;
 ///     
 ///    // with chunk size
-///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, serial_field, conn, chunk_size, |streamed_table_data| async {
 ///         // do work here
 ///     });
 ///    
 ///    // with a specified beginning
 ///    let beginning_id = Some(200);
-///    stream_serial_table!(some_table, autoincremented_field, conn,  chunk_size, beginning_id, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, serial_field, conn,  chunk_size, beginning_id, |streamed_table_data| async {
 ///         // do work here
 ///     });
 ///
 ///   // with a specified end
 ///    let end_id = Some(340);
-///    stream_serial_table!(some_table, autoincremented_field, conn,  chunk_size, beginning_id, end_id, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, serial_field, conn,  chunk_size, beginning_id, end_id, |streamed_table_data| async {
 ///         // do work here
 ///     });
 /// }
@@ -139,39 +146,46 @@ macro_rules! stream_serial_table {
 /// autoincremented field which is used to cursor through the table
 /// for processing.
 ///
+/// Defaults:
+///
+/// - Chunk size is 500
+/// - Cursor's beginning is the minimum value of the serial table
+/// - Cursor's end is the maximum value of the serial table
 ///
 /// # Examples
 ///
 /// Stream a serial table with default chunk_size, from, and to
 ///
 /// ```ignore
+/// use diesel_streamer::stream_serial_table;
+///
+///
 /// async fn main() {
-///     use diesel_streamer::stream_serial_table;
-///     use crate::schema::some_table::dsl::{some_table, autoincremented_field};
+///     use crate::schema::some_table::dsl::{some_table, serial_field};
 ///
 ///     let mut conn = pool.get().await.unwrap();
 ///
-///     stream_serial_table!(some_table, autoincremented_field, conn, |streamed_table_data| async move {
+///     stream_serial_table!(some_table, serial_field, conn, |streamed_table_data| {
 ///         // do work here
 ///     });
 ///
 ///     let chunk_size = 20;
 ///     
 ///    // with chunk size
-///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, serial_field, conn, chunk_size, |streamed_table_data| {
 ///         // do work here
 ///     });
 ///
 ///    
 ///    // with a specified beginning
 ///    let beginning_id = Some(200);
-///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, beginning_id, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, serial_field, conn, chunk_size, beginning_id, |streamed_table_data| {
 ///         // do work here
 ///     });
 ///
 ///   // with a specified end
 ///    let end_id = Some(340);
-///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, beginning_id, end_id, |streamed_table_data| async move {
+///    stream_serial_table!(some_table, serial_field, conn, chunk_size, beginning_id, end_id, |streamed_table_data| {
 ///         // do work here
 ///     });
 /// }
