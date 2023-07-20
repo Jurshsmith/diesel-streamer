@@ -1,6 +1,6 @@
 # Diesel Streamer
 
-A 0KB diesel add-on for streaming large tables. It currently allows streaming
+A tiny diesel add-on for streaming large tables. It currently allows streaming
 large serial tables using a cursor-based streaming strategy.
 
 ## Installation
