@@ -1,5 +1,3 @@
-use std::ops::RangeInclusive;
-
 use diesel::{pg::PgConnection, prelude::*, Insertable};
 
 // User Factory
@@ -28,10 +26,10 @@ pub struct User {
     pub updated_at: chrono::NaiveDateTime,
 }
 
-pub fn insert_users(number_of_users: RangeInclusive<u16>, conn: &mut PgConnection) {
+pub fn insert_users(number_of_users: u16, conn: &mut PgConnection) {
     use self::users::dsl::users;
 
-    let unsaved_users: Vec<UnsavedUser> = number_of_users
+    let unsaved_users: Vec<UnsavedUser> = (1..=number_of_users)
         .into_iter()
         .map(|index| UnsavedUser {
             name: format!("UserName {}", index),
@@ -56,9 +54,9 @@ pub fn insert_user(name: &str, conn: &mut PgConnection) -> User {
 }
 
 pub fn get_users(conn: &mut PgConnection) -> Vec<User> {
-    use self::users::dsl::users;
+    use self::users::dsl::{id, users};
 
-    users.get_results::<User>(conn).unwrap()
+    users.order_by(id).get_results::<User>(conn).unwrap()
 }
 
 pub fn get_user_by_name(user_name: &str, conn: &mut PgConnection) -> Option<User> {
