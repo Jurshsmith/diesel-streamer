@@ -42,7 +42,6 @@
 /// ```
 #[macro_export]
 #[cfg(feature = "async")]
-#[cfg(not(feature = "sync"))]
 macro_rules! stream_serial_table {
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr , $stream_processor: expr) => {{
         use diesel_streamer::stream_serial_table;
@@ -179,7 +178,6 @@ macro_rules! stream_serial_table {
 /// ```
 #[macro_export]
 #[cfg(feature = "sync")]
-#[cfg(not(feature = "async"))]
 macro_rules! stream_serial_table {
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr , $stream_processor: expr) => {{
         use diesel_streamer::stream_serial_table;
