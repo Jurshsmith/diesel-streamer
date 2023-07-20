@@ -28,13 +28,13 @@
 ///     });
 ///    
 ///    // with a specified beginning
-///    let beginning_id = 200;
+///    let beginning_id = Some(200);
 ///    stream_serial_table!(some_table, autoincremented_field, conn,  chunk_size, beginning_id, |streamed_table_data| async move {
 ///         // do work here
 ///     });
 ///
 ///   // with a specified end
-///    let end_id = 340;
+///    let end_id = Some(340);
 ///    stream_serial_table!(some_table, autoincremented_field, conn,  chunk_size, beginning_id, end_id, |streamed_table_data| async move {
 ///         // do work here
 ///     });
@@ -164,13 +164,13 @@ macro_rules! stream_serial_table {
 ///
 ///    
 ///    // with a specified beginning
-///    let beginning_id = 200;
+///    let beginning_id = Some(200);
 ///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, beginning_id, |streamed_table_data| async move {
 ///         // do work here
 ///     });
 ///
 ///   // with a specified end
-///    let end_id = 340;
+///    let end_id = Some(340);
 ///    stream_serial_table!(some_table, autoincremented_field, conn, chunk_size, beginning_id, end_id, |streamed_table_data| async move {
 ///         // do work here
 ///     });
@@ -254,7 +254,7 @@ macro_rules! stream_serial_table {
 
         if (to > from) {
             while from <= to {
-                let chunk_limit = from + $chunk_size;
+                let chunk_limit = from + ($chunk_size as i32);
 
                 let streamed_data = $query
                     .filter($cursor_field.eq_any(from..chunk_limit))
