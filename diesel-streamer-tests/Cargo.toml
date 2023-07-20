@@ -7,5 +7,5 @@ edition = "2021"
 [dependencies]
 chrono = { version = "0.4" }
 diesel = { version = "2", features = ["postgres", "chrono"]}
-diesel_streamer = { path = "../diesel_streamer" }
+diesel-streamer = { path = "../diesel-streamer" }
 dotenvy = "0.15"

@@ -1,6 +1,6 @@
 [workspace]
 
 members = [
-  "diesel_streamer",
-  "diesel_streamer_tests",
+  "diesel-streamer",
+  "diesel-streamer-tests",
 ]
