@@ -57,7 +57,7 @@ macro_rules! stream_serial_table {
             default_chunk_size,
             default_from,
             default_to,
-            $stream_processor,
+            $stream_processor
         )
     }};
 
@@ -74,7 +74,7 @@ macro_rules! stream_serial_table {
             $chunk_size,
             default_from,
             default_to,
-            $stream_processor,
+            $stream_processor
         )
     }};
 
@@ -90,11 +90,11 @@ macro_rules! stream_serial_table {
             $chunk_size,
             $from,
             default_to,
-            $stream_processor,
+            $stream_processor
         )
     }};
 
-    ( $query:expr ,   $cursor_field:expr ,  $conn: expr ,  $chunk_size:expr , $from:expr, $to:expr, $stream_processor: expr,) => {{
+    ( $query:expr ,   $cursor_field:expr ,  $conn: expr ,  $chunk_size:expr , $from:expr, $to:expr, $stream_processor: expr) => {{
         use diesel::dsl::{max, min};
         use diesel::{prelude::*, QueryDsl, RunQueryDsl};
 
@@ -193,7 +193,7 @@ macro_rules! stream_serial_table {
             default_chunk_size,
             default_from,
             default_to,
-            $stream_processor,
+            $stream_processor
         )
     }};
 
@@ -210,7 +210,7 @@ macro_rules! stream_serial_table {
             $chunk_size,
             default_from,
             default_to,
-            $stream_processor,
+            $stream_processor
         )
     }};
 
@@ -226,11 +226,11 @@ macro_rules! stream_serial_table {
             $chunk_size,
             $from,
             default_to,
-            $stream_processor,
+            $stream_processor
         )
     }};
 
-    ( $query:expr ,   $cursor_field:expr ,  $conn: expr ,  $chunk_size:expr , $from:expr, $to:expr, $stream_processor: expr,) => {{
+    ( $query:expr , $cursor_field:expr ,  $conn: expr ,  $chunk_size:expr , $from:expr, $to:expr, $stream_processor: expr) => {{
         use diesel::dsl::{max, min};
         use diesel::{prelude::*, QueryDsl, RunQueryDsl};
 
