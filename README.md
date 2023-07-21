@@ -7,14 +7,14 @@ large serial tables using a cursor-based streaming strategy.
 
 ```toml
 [dependencies]
-diesel-streamer = "0.1.1"
+diesel-streamer = "0.1.2"
 ```
 
 For tokio async runtime:
 
 ```toml
 [dependencies]
-diesel-streamer = { version = "0.1.1", features = ["async"]}
+diesel-streamer = { version = "0.1.2", features = ["async"]}
 ```
 
 <br>

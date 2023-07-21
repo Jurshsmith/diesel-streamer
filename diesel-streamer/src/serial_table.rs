@@ -1,5 +1,3 @@
-// TODO: Update macro to be more composable for defaults
-
 /// Streams a serial table for diesel schemas. A serial table has an
 /// autoincremented field which is used to cursor through the table
 /// for processing.
