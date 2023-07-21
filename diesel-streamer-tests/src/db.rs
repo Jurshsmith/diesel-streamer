@@ -8,6 +8,14 @@ use crate::migrations;
 pub fn establish_connection() -> PgConnection {
     let db_url = database_url();
 
+    PgConnection::establish(&db_url)
+        .map_err(|_error| panic!("Error connecting to DB"))
+        .unwrap()
+}
+
+pub fn setup() -> PgConnection {
+    let db_url = database_url();
+
     PgConnection::establish(&db_url).unwrap_or_else(|_error| {
         let (db_name, db_raw_url) = get_db_name_and_raw_url(&db_url);
 
@@ -38,7 +46,7 @@ fn get_db_name_and_raw_url(url: &str) -> (String, String) {
 
     let db_name = url_split
         .pop()
-        .expect("DATABAE NAME needs to be specified. See: sample.env");
+        .expect("DATABASE NAME needs to be specified. See: sample.env");
     let db_raw_url = url_split.join("/");
 
     (db_name.to_string(), db_raw_url)
