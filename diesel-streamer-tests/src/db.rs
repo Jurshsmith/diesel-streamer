@@ -51,5 +51,5 @@ fn create_database(db_name: &str, conn: &mut PgConnection) {
 }
 
 fn connect_to_database_url_or_panic(db_url: &str) -> PgConnection {
-    PgConnection::establish(&db_url).unwrap_or_else(|_| panic!("Error connecting to {}", db_url))
+    PgConnection::establish(db_url).unwrap_or_else(|_| panic!("Error connecting to {}", db_url))
 }
