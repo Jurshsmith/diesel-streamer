@@ -61,7 +61,7 @@ Defaults:
 
 - Chunk size: 500
 - Cursor's beginning: lowest value of `serial_field` in the table
-- Curosr's end: highest value of `serial_field` in the table
+- Cursor's end: highest value of `serial_field` in the table
 
 _N/B: Generally, streaming should only be considered when there is a possibility of hitting OOM error when processing the table in question._
 

@@ -9,6 +9,7 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 keywords = ["streaming", "cursor-based", "bigserial", "database"]
 repository = "https://github.com/jurshsmith/diesel-streamer"
+readme="../README.md"
 rust-version = "1.56"
 
 [features]
