@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable, 1.56.0]
+        rust: [nightly, beta, stable, 1.56.1]
 
     services:
       postgres:
