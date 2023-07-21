@@ -55,12 +55,14 @@ fn get_db_name_and_raw_url(url: &str) -> (String, String) {
     (db_name.to_string(), db_raw_url)
 }
 
+#[allow(clippy::uninlined_format_args)]
 fn create_database(db_name: &str, conn: &mut PgConnection) {
-    diesel::sql_query(format!(r#"CREATE DATABASE "{db_name}""#))
+    diesel::sql_query(format!(r#"CREATE DATABASE "{}""#, db_name))
         .execute(conn)
         .unwrap();
 }
 
+#[allow(clippy::uninlined_format_args)]
 fn connect_to_database_url_or_panic(db_url: &str) -> PgConnection {
-    PgConnection::establish(db_url).unwrap_or_else(|_| panic!("Error connecting to {db_url}"))
+    PgConnection::establish(db_url).unwrap_or_else(|_| panic!("Error connecting to {}", db_url))
 }

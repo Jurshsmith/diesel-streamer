@@ -27,12 +27,13 @@ pub struct User {
 }
 
 /// # Panics
+#[allow(clippy::uninlined_format_args)]
 pub fn insert_users(number_of_users: u16, conn: &mut PgConnection) {
     use self::users::dsl::users;
 
     let unsaved_users: Vec<UnsavedUser> = (1..=number_of_users)
         .map(|index| UnsavedUser {
-            name: format!("UserName {index}"),
+            name: format!("UserName {}", index),
         })
         .collect();
 
