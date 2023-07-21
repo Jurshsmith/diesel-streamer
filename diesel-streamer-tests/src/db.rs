@@ -5,6 +5,8 @@ use std::env;
 
 use crate::migrations;
 
+/// # Panics
+#[must_use]
 pub fn establish_connection() -> PgConnection {
     let db_url = database_url();
 
@@ -13,6 +15,7 @@ pub fn establish_connection() -> PgConnection {
         .unwrap()
 }
 
+#[must_use]
 pub fn setup() -> PgConnection {
     let db_url = database_url();
 
@@ -53,11 +56,11 @@ fn get_db_name_and_raw_url(url: &str) -> (String, String) {
 }
 
 fn create_database(db_name: &str, conn: &mut PgConnection) {
-    diesel::sql_query(format!(r#"CREATE DATABASE "{}""#, db_name))
+    diesel::sql_query(format!(r#"CREATE DATABASE "{db_name}""#))
         .execute(conn)
         .unwrap();
 }
 
 fn connect_to_database_url_or_panic(db_url: &str) -> PgConnection {
-    PgConnection::establish(db_url).unwrap_or_else(|_| panic!("Error connecting to {}", db_url))
+    PgConnection::establish(db_url).unwrap_or_else(|_| panic!("Error connecting to {db_url}"))
 }

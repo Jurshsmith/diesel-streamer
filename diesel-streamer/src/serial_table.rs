@@ -152,7 +152,7 @@ macro_rules! stream_serial_table {
 ///
 /// # Examples
 ///
-/// Stream a serial table with default chunk_size, from, and to
+///  Stream a serial table using different configurations.
 ///
 /// ```ignore
 /// use diesel_streamer::stream_serial_table;
@@ -188,8 +188,10 @@ macro_rules! stream_serial_table {
 ///     });
 /// }
 /// ```
+
 #[macro_export]
 #[cfg(feature = "sync")]
+#[allow(clippy::module_name_repetitions)]
 macro_rules! stream_serial_table {
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr , $stream_processor: expr) => {{
         use diesel_streamer::stream_serial_table;

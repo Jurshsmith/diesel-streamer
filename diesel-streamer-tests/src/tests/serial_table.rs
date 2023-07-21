@@ -7,15 +7,15 @@ mod tests {
     #[test]
     fn allows_processing_table_data() {
         test_runner::run_test(|conn| {
+            use factory::users::dsl::{id, users};
+
             factory::insert_users(2, conn);
 
             let all_users = factory::get_users(conn);
 
-            use factory::users::dsl::{id, users};
-
             diesel_streamer::stream_serial_table!(users, id, conn, |loaded_users: Vec<User>| {
                 assert_eq!(loaded_users.first(), all_users.first());
-                assert_eq!(loaded_users.last(), all_users.last())
+                assert_eq!(loaded_users.last(), all_users.last());
             });
         });
     }
@@ -25,10 +25,10 @@ mod tests {
         test_runner::run_test(|conn| {
             use factory::users::dsl::{id, users};
 
-            let call_count = Counter::new(0);
+            let mut call_count = Counter::new(0);
 
             diesel_streamer::stream_serial_table!(users, id, conn, |_loaded_users: Vec<User>| {
-                call_count.increment()
+                call_count.increment();
             });
 
             assert_eq!(*call_count.value, 0);

@@ -10,9 +10,10 @@ pub fn run_test<TestFn>(test_fn: TestFn)
 where
     TestFn: FnOnce(&mut PgConnection),
 {
-    let mut conn = match should_skip_db_setup() {
-        true => db::establish_connection(),
-        false => db::setup(),
+    let mut conn = if should_skip_db_setup() {
+        db::establish_connection()
+    } else {
+        db::setup()
     };
 
     conn.test_transaction(|conn| -> Result<(), ()> {

@@ -26,12 +26,13 @@ pub struct User {
     pub updated_at: chrono::NaiveDateTime,
 }
 
+/// # Panics
 pub fn insert_users(number_of_users: u16, conn: &mut PgConnection) {
     use self::users::dsl::users;
 
     let unsaved_users: Vec<UnsavedUser> = (1..=number_of_users)
         .map(|index| UnsavedUser {
-            name: format!("UserName {}", index),
+            name: format!("UserName {index}"),
         })
         .collect();
 
@@ -41,6 +42,7 @@ pub fn insert_users(number_of_users: u16, conn: &mut PgConnection) {
         .unwrap();
 }
 
+/// # Panics
 pub fn insert_user(name: &str, conn: &mut PgConnection) -> User {
     use self::users::dsl::users;
 
@@ -52,12 +54,14 @@ pub fn insert_user(name: &str, conn: &mut PgConnection) -> User {
         .unwrap()
 }
 
+/// # Panics
 pub fn get_users(conn: &mut PgConnection) -> Vec<User> {
     use self::users::dsl::{id, users};
 
     users.order_by(id).get_results::<User>(conn).unwrap()
 }
 
+/// # Panics
 pub fn get_user_by_name(user_name: &str, conn: &mut PgConnection) -> Option<User> {
     use self::users::dsl::{name, users};
 
