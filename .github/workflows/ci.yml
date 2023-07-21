@@ -12,6 +12,7 @@ permissions:
 env:
   RUSTFLAGS: -Dwarnings
   TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/diesel_streamer_tests
+  SKIP_DB_SETUP: true
 
 jobs:
   test:
@@ -50,6 +51,8 @@ jobs:
       - name: Enable nightly-only tests
         run: echo RUSTFLAGS=${RUSTFLAGS}\ --cfg=async_trait_nightly_testing >> $GITHUB_ENV
         if: matrix.rust == 'nightly'
+      - name: Setup Database
+        run: cargo run -p diesel_streamer_tests
       - run: cargo test -p diesel_streamer_tests --lib
 
   minimal:
