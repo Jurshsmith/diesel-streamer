@@ -45,8 +45,9 @@
 ///     });
 /// }
 /// ```
-#[macro_export]
+#[allow(clippy::module_name_repetitions)]
 #[cfg(feature = "async")]
+#[macro_export]
 macro_rules! stream_serial_table {
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr , $stream_processor: expr) => {{
         use diesel_streamer::stream_serial_table;
@@ -101,13 +102,15 @@ macro_rules! stream_serial_table {
 
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr ,  $chunk_size:expr , $from:expr, $to:expr, $stream_processor: expr) => {{
         use diesel::dsl::{max, min};
-        use diesel::{prelude::*, QueryDsl, RunQueryDsl};
+        use diesel::prelude::*;
+        use diesel_async::RunQueryDsl;
 
         let mut from = match $from {
             Some(from) => from,
             None => $query
                 .select(min($cursor_field))
                 .get_result::<Option<i32>>($conn)
+                .await
                 .unwrap()
                 .unwrap_or(0),
         };
@@ -122,19 +125,19 @@ macro_rules! stream_serial_table {
                 .unwrap_or(0),
         };
 
-        if (to > $from) {
-            while $from <= to {
-                let chunk_limit = $from + $chunk_size;
+        if (to > from) {
+            while from <= to {
+                let chunk_limit = from + $chunk_size;
 
                 let streamed_data = $query
-                    .filter($cursor_field.eq_any($from..chunk_limit))
+                    .filter($cursor_field.eq_any(from..chunk_limit))
                     .load($conn)
                     .await
                     .unwrap();
 
                 ($stream_processor)(streamed_data).await;
 
-                $from = chunk_limit;
+                from = chunk_limit;
             }
         }
     }};
@@ -189,9 +192,9 @@ macro_rules! stream_serial_table {
 /// }
 /// ```
 
-#[macro_export]
-#[cfg(feature = "sync")]
 #[allow(clippy::module_name_repetitions)]
+#[cfg(feature = "sync")]
+#[macro_export]
 macro_rules! stream_serial_table {
     ( $query:expr ,   $cursor_field:expr ,  $conn: expr , $stream_processor: expr) => {{
         use diesel_streamer::stream_serial_table;
