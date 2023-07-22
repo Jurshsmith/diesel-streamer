@@ -18,7 +18,6 @@ sync = []
 async = []
 
 [dependencies]
-diesel = "2" 
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
