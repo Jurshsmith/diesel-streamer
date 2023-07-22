@@ -1,6 +1,6 @@
 [package]
 name = "diesel-streamer"
-version = "0.1.3"
+version = "0.1.8"
 authors = ["Joshua Oladele <jurshsmith@gmail.com>"]
 categories = ["database", "database-implementations"]
 description = "A tiny diesel add-on for streaming large tables"
@@ -13,7 +13,6 @@ readme="../README.md"
 rust-version = "1.56.1"
 
 [features]
-default = ["sync"]
 sync = []
 async = []
 
