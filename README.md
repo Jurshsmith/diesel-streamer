@@ -1,5 +1,9 @@
 # Diesel Streamer
 
+[<img alt="github" src="https://img.shields.io/badge/Github-jurshsmith%2Fdiesel--streamer-blue?logo=github" height="20">](https://github.com/jurshsmith/diesel-streamer)
+[<img alt="crates.io" src="https://img.shields.io/crates/v/diesel-streamer.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/diesel-streamer)
+[<img alt="diesel-streamer build" src="https://img.shields.io/github/actions/workflow/status/jurshsmith/diesel-streamer/ci.yml?branch=main&style=for-the-badge" height="20">](https://github.com/jurshsmith/diesel-streamer/actions?query=branch%3Amain)
+
 A tiny diesel add-on for streaming large tables. It currently allows streaming
 large serial tables using a cursor-based streaming strategy.
 
