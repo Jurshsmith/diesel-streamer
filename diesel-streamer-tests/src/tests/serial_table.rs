@@ -21,6 +21,27 @@ mod tests {
     }
 
     #[test]
+    fn allows_processing_tables_with_one_row() {
+        test_runner::run_test(|conn| {
+            use factory::users::dsl::{id, users};
+
+            factory::insert_users(1, conn);
+
+            let all_users = factory::get_users(conn);
+
+            let mut call_count = Counter::new(0);
+
+            diesel_streamer::stream_serial_table!(users, id, conn, |loaded_users: Vec<User>| {
+                call_count.increment();
+                assert_eq!(loaded_users.len(), 1);
+                assert_eq!(loaded_users.first(), all_users.first());
+            });
+
+            assert_eq!(*call_count.value, 1);
+        });
+    }
+
+    #[test]
     fn does_nothing_when_table_is_empty() {
         test_runner::run_test(|conn| {
             use factory::users::dsl::{id, users};
