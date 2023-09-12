@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use crate::counter::Counter;
     use crate::factory::{self, User};
     use crate::test_runner;
 
@@ -29,15 +28,15 @@ mod tests {
 
             let all_users = factory::get_users(conn);
 
-            let mut call_count = Counter::new(0);
+            let mut call_count = 0;
 
             diesel_streamer::stream_serial_table!(users, id, conn, |loaded_users: Vec<User>| {
-                call_count.increment();
+                call_count += 1;
                 assert_eq!(loaded_users.len(), 1);
                 assert_eq!(loaded_users.first(), all_users.first());
             });
 
-            assert_eq!(*call_count.value, 1);
+            assert_eq!(call_count, 1);
         });
     }
 
@@ -46,13 +45,13 @@ mod tests {
         test_runner::run_test(|conn| {
             use factory::users::dsl::{id, users};
 
-            let mut call_count = Counter::new(0);
+            let mut call_count = 0;
 
             diesel_streamer::stream_serial_table!(users, id, conn, |_loaded_users: Vec<User>| {
-                call_count.increment();
+                call_count += 1;
             });
 
-            assert_eq!(*call_count.value, 0);
+            assert_eq!(call_count, 0);
         });
     }
 
