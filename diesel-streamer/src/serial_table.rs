@@ -125,7 +125,7 @@ macro_rules! stream_serial_table {
                 .unwrap_or(0),
         };
 
-        if (to > from) {
+        if (to != 0) {
             while from <= to {
                 let chunk_limit = from + $chunk_size;
 
