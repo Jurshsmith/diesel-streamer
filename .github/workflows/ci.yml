@@ -56,7 +56,8 @@ jobs:
         if: matrix.rust == 'nightly'
       - name: Setup Database
         run: cargo run -p diesel_streamer_tests
-      - run: cargo test -p diesel_streamer_tests --lib
+      - name: Run Tests
+        run: cargo test -p diesel_streamer_tests
 
   minimal:
     name: Minimal versions
