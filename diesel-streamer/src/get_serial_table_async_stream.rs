@@ -77,7 +77,7 @@ macro_rules! get_serial_table_async_stream {
 
         type DataStream = Vec<$table_struct>;
 
-        enum SerialTableStreamerState<'a> {
+        enum SerialTableStreamState<'a> {
             GetFromAndToFuture,
             PollFromAndToFuture(
                 Pin<Box<dyn Future<Output = ($fromToType, $fromToType)> + Send + 'a>>,
@@ -93,16 +93,16 @@ macro_rules! get_serial_table_async_stream {
         };
 
         pin_project!(
-            pub struct SerialTableStreamer<'a> {
+            pub struct SerialTableStream<'a> {
                 from: Option<$fromToType>,
                 to: Option<$fromToType>,
                 chunk_size: i32,
                 conn: $conn_type,
-                state: SerialTableStreamerState<'a>,
+                state: SerialTableStreamState<'a>,
             }
         );
 
-        impl<'a> Stream for SerialTableStreamer<'a> {
+        impl<'a> Stream for SerialTableStream<'a> {
             type Item = DataStream;
 
             fn poll_next(
@@ -127,10 +127,10 @@ macro_rules! get_serial_table_async_stream {
                 let to = *this.to;
 
                 match this.state {
-                    SerialTableStreamerState::GetFromAndToFuture => {
+                    SerialTableStreamState::GetFromAndToFuture => {
                         let conn = this.conn.clone();
 
-                        *this.state = SerialTableStreamerState::PollFromAndToFuture(
+                        *this.state = SerialTableStreamState::PollFromAndToFuture(
                             async move {
                                 let mut conn = conn.lock().await;
 
@@ -162,17 +162,17 @@ macro_rules! get_serial_table_async_stream {
                         cx.waker().wake_by_ref();
                         Poll::Pending
                     }
-                    SerialTableStreamerState::PollFromAndToFuture(from_and_to_future) => {
+                    SerialTableStreamState::PollFromAndToFuture(from_and_to_future) => {
                         let (from, to): ($fromToType, $fromToType) =
                             futures_util::ready!(from_and_to_future.as_mut().poll(cx));
 
-                        *this.state = SerialTableStreamerState::GetDataStreamFuture((from, to));
+                        *this.state = SerialTableStreamState::GetDataStreamFuture((from, to));
 
                         cx.waker().wake_by_ref();
 
                         Poll::Pending
                     }
-                    SerialTableStreamerState::GetDataStreamFuture((from, to)) => {
+                    SerialTableStreamState::GetDataStreamFuture((from, to)) => {
                         let from = *from;
                         let to = *to;
 
@@ -193,7 +193,7 @@ macro_rules! get_serial_table_async_stream {
                             }
                             .boxed();
 
-                            *this.state = SerialTableStreamerState::PollDataStreamFuture((
+                            *this.state = SerialTableStreamState::PollDataStreamFuture((
                                 data_stream_future,
                                 chunk_limit,
                                 to,
@@ -204,7 +204,7 @@ macro_rules! get_serial_table_async_stream {
                             Poll::Pending
                         }
                     }
-                    SerialTableStreamerState::PollDataStreamFuture((
+                    SerialTableStreamState::PollDataStreamFuture((
                         data_stream_future,
                         next_from,
                         to,
@@ -213,7 +213,7 @@ macro_rules! get_serial_table_async_stream {
                             futures_util::ready!(data_stream_future.as_mut().poll(cx));
 
                         *this.state =
-                            SerialTableStreamerState::GetDataStreamFuture((*next_from, *to));
+                            SerialTableStreamState::GetDataStreamFuture((*next_from, *to));
 
                         cx.waker().wake_by_ref();
 
@@ -223,11 +223,11 @@ macro_rules! get_serial_table_async_stream {
             }
         }
 
-        Box::new(SerialTableStreamer {
+        Box::new(SerialTableStream {
             from: $from,
             to: $to,
             chunk_size: $chunk_size,
-            state: SerialTableStreamerState::GetFromAndToFuture,
+            state: SerialTableStreamState::GetFromAndToFuture,
             conn: $conn,
         })
     }};
