@@ -1,6 +1,6 @@
 [package]
 name = "diesel-streamer"
-version = "0.1.11"
+version = "0.1.12"
 authors = ["Joshua Oladele <jurshsmith@gmail.com>"]
 categories = ["database", "database-implementations"]
 description = "A tiny diesel add-on for streaming large tables"

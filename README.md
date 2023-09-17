@@ -13,14 +13,14 @@ For a regular synchronous runtime:
 
 ```toml
 [dependencies]
-diesel-streamer = { version = "0.1.11", features = ["sync"]}
+diesel-streamer = { version = "0.1.12", features = ["sync"]}
 ```
 
 For tokio async runtime:
 
 ```toml
 [dependencies]
-diesel-streamer = { version = "0.1.11", features = ["async"]}
+diesel-streamer = { version = "0.1.12", features = ["async"]}
 ```
 
 <br>
