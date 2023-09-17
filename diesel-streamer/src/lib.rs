@@ -1,1 +1,2 @@
-mod serial_table;
+mod get_serial_table_async_stream;
+mod stream_serial_table;
