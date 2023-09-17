@@ -3,7 +3,7 @@
 #[macro_export]
 macro_rules! get_serial_table_async_stream {
     ( $query:expr, $cursor_field:expr, $conn:expr, $conn_type:ty, $table_struct:ty, $fromToType:ty) => {{
-        use diesel_streamer2::get_serial_table_async_stream;
+        use diesel_streamer::get_serial_table_async_stream;
 
         let default_chunk_size = 500;
         let default_from = None;
@@ -23,7 +23,7 @@ macro_rules! get_serial_table_async_stream {
     }};
 
     ($query:expr, $cursor_field:expr, $conn:expr, $conn_type:ty, $table_struct:ty, $fromToType:ty, $chunk_size:expr) => {{
-        use diesel_streamer2::get_serial_table_async_stream;
+        use diesel_streamer::get_serial_table_async_stream;
 
         let mut default_from = None;
         let default_to = None;
@@ -42,7 +42,7 @@ macro_rules! get_serial_table_async_stream {
     }};
 
     ($query:expr, $cursor_field:expr, $conn: expr, $conn_type:ty, $table_struct:ty, $fromToType:ty, $chunk_size:expr, $from: expr) => {{
-        use diesel_streamer2::get_serial_table_async_stream;
+        use diesel_streamer::get_serial_table_async_stream;
 
         let default_to = None;
 
